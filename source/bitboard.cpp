@@ -320,14 +320,32 @@ void Bitboards::init()
 			// 桂
 			// 桂の利きは、歩の利きの地点に長さ1の角の利きを作って、前方のみ残す。
 			Bitboard tmp(ZERO);
-			Bitboard pawn = lanceEffect(c, sq, Bitboard(1));
+			Bitboard pawnBlack = lanceEffect(BLACK, sq, Bitboard(1));
+			Bitboard pawnWhite = lanceEffect(WHITE, sq, Bitboard(1));
+			Square sqLL = sq + SQ_L * 2;
+			Square sqRR = sq + SQ_R * 2;
 
-			if (pawn)
+			if(pawnBlack)
 			{
-				Square sq2 = pawn.pop();
-				Bitboard pawn2 = lanceEffect(c, sq2, Bitboard(1)); // さらに1つ前
-				if (pawn2)
-					tmp = bishopEffect(sq2, Bitboard(1)) & RANK_BB[rank_of(pawn2.pop())];
+				Square sq2 = pawnBlack.pop();
+				Bitboard pawn2 = lanceEffect(BLACK, sq2, Bitboard(1)); // さらに1つ前
+				if(pawn2) tmp = bishopEffect(sq2, Bitboard(1)) & RANK_BB[rank_of(pawn2.pop())];
+			}
+			if(pawnWhite)
+			{
+				Square sq2 = pawnWhite.pop();
+				Bitboard pawn2 = lanceEffect(WHITE, sq2, Bitboard(1)); // さらに1つ前
+				if(pawn2) tmp |= bishopEffect(sq2, Bitboard(1)) & RANK_BB[rank_of(pawn2.pop())];
+			}
+			if(sqLL>=SQ_ZERO && sqLL<=SQ_NB)
+			{
+				Square sqLLU = sqLL + SQ_U; if(sqLLU>=SQ_ZERO && sqLLU<=SQ_NB) tmp |= Bitboard(sqLLU);
+				Square sqLLD = sqLL + SQ_D; if(sqLLD>=SQ_ZERO && sqLLD<=SQ_NB) tmp |= Bitboard(sqLLD);
+			}
+			if(sqRR>=SQ_ZERO && sqRR<=SQ_NB)
+			{
+				Square sqRRU = sqRR + SQ_U; if(sqRRU>=SQ_ZERO && sqRRU<=SQ_NB) tmp |= Bitboard(sqRRU);
+				Square sqRRD = sqRR + SQ_D; if(sqRRD>=SQ_ZERO && sqRRD<=SQ_NB) tmp |= Bitboard(sqRRD);
 			}
 			KnightEffectBB[sq][c] = tmp;
 

@@ -90,8 +90,8 @@ template <PieceType Pt, Color Us, bool All> struct make_move_target {
 				to = target.pop();
 				if (canPromote(Us, to))
 					mlist++->move = make_move_promote(from, to  , Us, Pt);
-				if ((Us == BLACK && rank_of(to) >= RANK_3) || (Us == WHITE && rank_of(to) <= RANK_7))
-					mlist++->move = make_move(from, to , Us, Pt);
+
+				mlist++->move = make_move(from, to , Us, Pt);
 			}
 		}
 		break;
