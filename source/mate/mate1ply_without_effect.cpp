@@ -478,19 +478,19 @@ namespace {
 		while (bb)
 		{
 			from = bb.pop();
-			sum |= chessKnightEffect<Them>(from);
+			sum |= chessKnightEffect(from);
 		}
 		bb = pos.pieces<Them,C_KNIGHT_P>() & check_around_bb<Them>(C_KNIGHT_P, sq_king);
 		while (bb)
 		{
 			from = bb.pop();
-			sum |= chessKnightEffect<Them>(from);
+			sum |= chessKnightEffect(from);
 		}
 		bb = pos.pieces<Them,PRO_C_KNIGHT_P>() & check_around_bb<Them>(PRO_C_KNIGHT_P, sq_king);	//to do
 		while (bb)
 		{
 			from = bb.pop();
-			sum |= chessKnightEffect<Them>(from);
+			sum |= chessKnightEffect(from);
 		}
 		bb = pos.pieces<Them,SILVER>() & check_around_bb<Them>(SILVER, sq_king);
 		while (bb)
@@ -568,19 +568,19 @@ namespace {
 		while (bb)
 		{
 			from = bb.pop();
-			sum |= chessKnightEffect<Them>(from);
+			sum |= chessKnightEffect(from);
 		}
 		bb = pos.pieces<Them,C_KNIGHT_P>() & check_around_bb<Them>(C_KNIGHT_P, sq_king) & avoid_bb;
 		while (bb)
 		{
 			from = bb.pop();
-			sum |= chessKnightEffect<Them>(from);
+			sum |= chessKnightEffect(from);
 		}
 		bb = pos.pieces<Them,PRO_C_KNIGHT_P>() & check_around_bb<Them>(PRO_C_KNIGHT_P, sq_king) & avoid_bb;	//to do
 		while (bb)
 		{
 			from = bb.pop();
-			sum |= chessKnightEffect<Them>(from);
+			sum |= chessKnightEffect(from);
 		}
 		bb = pos.pieces<Them,SILVER>() & check_around_bb<Them>(SILVER, sq_king) & avoid_bb;
 		while (bb)
