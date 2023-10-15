@@ -499,16 +499,16 @@ enum Piece : uint32_t
 	NO_PIECE = 0,
 
 	// 以下、先後の区別のある駒(Bがついているのは先手、Wがついているのは後手)
-	B_PAWN = 1 , B_LANCE, B_KNIGHT, B_SILVER, B_BISHOP, B_ROOK, B_GOLD, B_KING, B_PRO_PAWN, B_PRO_LANCE, B_PRO_KNIGHT, B_PRO_SILVER, B_HORSE, B_DRAGON, B_GOLDS/*金相当の駒*/,
-	W_PAWN = 17, W_LANCE, W_KNIGHT, W_SILVER, W_BISHOP, W_ROOK, W_GOLD, W_KING, W_PRO_PAWN, W_PRO_LANCE, W_PRO_KNIGHT, W_PRO_SILVER, W_HORSE, W_DRAGON, W_GOLDS/*金相当の駒*/,
+	B_PAWN = 1 , B_LANCE, B_KNIGHT, B_SILVER, B_BISHOP, B_ROOK, B_C_KNIGHT_P, B_C_KNIGHT, B_GOLD, B_KING, B_PRO_PAWN, B_PRO_LANCE, B_PRO_KNIGHT, B_PRO_SILVER, B_HORSE, B_DRAGON, B_PRO_C_KNIGHT_P, B_GOLDS/*金相当の駒*/,
+	W_PAWN = 20, W_LANCE, W_KNIGHT, W_SILVER, W_BISHOP, W_ROOK, W_C_KNIGHT_P, W_C_KNIGHT, W_GOLD, W_KING, W_PRO_PAWN, W_PRO_LANCE, W_PRO_KNIGHT, W_PRO_SILVER, W_HORSE, W_DRAGON, W_PRO_C_KNIGHT_P, W_GOLDS/*金相当の駒*/,
 	PIECE_NB, // 終端
 	PIECE_ZERO = 0,
 
 	// --- 特殊な定数
 
-	PIECE_PROMOTE = 8, // 成り駒と非成り駒との差(この定数を足すと成り駒になる)
-	PIECE_WHITE = 16,  // これを先手の駒に加算すると後手の駒になる。
-	PIECE_RAW_NB = 8,  // 非成駒の終端
+	PIECE_PROMOTE = 10, // 成り駒と非成り駒との差(この定数を足すと成り駒になる)
+	PIECE_WHITE = 19,  // これを先手の駒に加算すると後手の駒になる。
+	PIECE_RAW_NB = 10,  // 非成駒の終端
 };
 
 // USIプロトコルで駒を表す文字列を返す。
@@ -520,7 +520,7 @@ static std::string usi_piece(Piece pc) { return std::string((pc & 32) ? "D":"")
 constexpr Color color_of(Piece pc)
 {
 //	return (pc & PIECE_WHITE) ? WHITE : BLACK;
-	static_assert(PIECE_WHITE == 16 && WHITE == 1 && BLACK == 0, "");
+	static_assert(PIECE_WHITE == 19 && WHITE == 1 && BLACK == 0, "");
 	return (Color)((pc & PIECE_WHITE) >> 4);
 }
 

@@ -7,7 +7,7 @@
 //    const
 // ----------------------------------------
 
-const char* USI_PIECE = ". P L N S B R G K +P+L+N+S+B+R+G+.p l n s b r g k +p+l+n+s+b+r+g+k";
+const char* USI_PIECE = ". P L N S B R T H G K +P+L+N+S+B+R+T+G+.p l n s b r t h g k +p+l+n+s+b+r+t+g+k";
 
 // ----------------------------------------
 //    tables
@@ -18,7 +18,7 @@ namespace Effect8 {
 	Directions direc_table[SQ_NB_PLUS1][SQ_NB_PLUS1];
 }
 
-std::string PieceToCharBW(" PLNSBRGK        plnsbrgk");
+std::string PieceToCharBW(" PLNSBRTHGK          plnsbrthgk");
 
 // ----------------------------------------
 // operator<<(std::ostream& os,...)とpretty() 

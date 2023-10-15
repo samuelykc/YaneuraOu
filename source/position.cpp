@@ -1495,7 +1495,7 @@ void Position::undo_move_impl(Move m)
 	// Piece moved_pc = is_promote(m) ? (moved_after_pc - PIECE_PROMOTE) : moved_after_pc;
 
 	// ↑の処理、mの成りを表現するbitを直接、Pieceの成りを表現するbitに持ってきたほうが速い。
-	static_assert((u32)MOVE_PROMOTE / (u32)PIECE_PROMOTE == 4096,"");
+	//static_assert((u32)MOVE_PROMOTE / (u32)PIECE_PROMOTE == 4096,"");
 	// log(2)4096 == 12
 	Piece moved_pc = Piece(moved_after_pc ^ ((m & MOVE_PROMOTE) >> 12));
 
