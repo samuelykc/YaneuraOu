@@ -363,14 +363,14 @@ const std::string Position::sfen(int gamePly_) const
 	int n;
 	bool found = false;
 	for (Color c = BLACK; c <= WHITE; ++c)
-		for (int pn = 0 ; pn < 7; ++ pn)
+		for (int pn = 0 ; pn < 9; ++ pn)
 		{
 			// 手駒の出力順はUSIプロトコルでは規定されていないが、
 			// USI原案によると、飛、角、金、銀、桂、香、歩の順である。
 			// sfen文字列を一意にしておかないと定跡データーをsfen文字列で書き出したときに
 			// 他のソフトで文字列が一致しなくて困るので、この順に倣うことにする。
 
-			const PieceType USI_Hand[7] = { ROOK,BISHOP,GOLD,SILVER,KNIGHT,LANCE,PAWN };
+			const PieceType USI_Hand[9] = { ROOK,BISHOP,GOLD,SILVER,KNIGHT,LANCE,PAWN,C_KNIGHT,C_KNIGHT_P };
 			auto p = USI_Hand[pn];
 
 			// その種類の手駒の枚数
@@ -598,7 +598,9 @@ Bitboard Position::attackers_to(Square sq, const Bitboard& occ) const
 			| (goldEffect  <BLACK>(sq) & pieces(GOLDS_HDK)   )
 			) & pieces<WHITE>())
 
-		// 先後の角・飛・香
+		// 先後のナイト・角・飛・香
+		| (chessKnightEffect(sq) & pieces(C_KNIGHT)     )
+		| (chessKnightEffect(sq) & pieces(C_KNIGHT_P)   )
 		| (bishopEffect(sq, occ) & pieces(BISHOP_HORSE) )
 		| (rookEffect(sq, occ) & (
 			   pieces(ROOK_DRAGON)

@@ -98,6 +98,7 @@ template <PieceType Pt, Color Us, bool All> struct make_move_target {
 
 		// 成れるなら成りも生成する駒 
 		case SILVER:
+		case C_KNIGHT_P:
 		{
 			if (enemy_field(Us) & from) {
 				// 敵陣からなら成れることは確定している
@@ -121,7 +122,7 @@ template <PieceType Pt, Color Us, bool All> struct make_move_target {
 		break;
 
 		// 成れない駒
-		case GOLD: case PRO_PAWN: case PRO_LANCE: case PRO_KNIGHT: case PRO_SILVER: case HORSE: case DRAGON: case KING:
+		case C_KNIGHT: case GOLD: case PRO_PAWN: case PRO_LANCE: case PRO_KNIGHT: case PRO_SILVER: case PRO_C_KNIGHT_P: case HORSE: case DRAGON: case KING:
 			target.foreach([&](Square to) { mlist++->move = make_move(from,to , Us, Pt); });
 			break;
 
@@ -196,6 +197,8 @@ template <MOVE_GEN_TYPE GenType, PieceType Pt, Color Us, bool All> struct Genera
 			auto target2 =
 				Pt == LANCE  ? lanceEffect (Us, from, occ) :
 				Pt == KNIGHT ? knightEffect(Us, from) :
+				Pt == C_KNIGHT ? chessKnightEffect(from) :
+				Pt == C_KNIGHT_P ? chessKnightEffect(from) :
 				Pt == SILVER ? silverEffect(Us, from) :
 				Bitboard(1); // error
 

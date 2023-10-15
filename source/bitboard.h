@@ -628,6 +628,7 @@ namespace BB_Table
 	extern Bitboard SilverEffectBB[SQ_NB_PLUS1][COLOR_NB];
 	extern Bitboard KnightEffectBB[SQ_NB_PLUS1][COLOR_NB];
 	extern Bitboard PawnEffectBB[SQ_NB_PLUS1][COLOR_NB];
+	extern Bitboard ChessKnightEffectBB[SQ_NB_PLUS1];
 
 	// 盤上の駒をないものとして扱う、遠方駒の利き。香、角、飛
 	extern Bitboard LanceStepEffectBB[SQ_NB_PLUS1][COLOR_NB];
@@ -692,6 +693,14 @@ inline Bitboard knightEffect(const Square sq)
 {
 	ASSERT_LV3(is_ok(C) && sq <= SQ_NB);
 	return BB_Table::KnightEffectBB[sq][C];
+}
+
+// ナイトの利き
+// これは遮断されることはないのでOccupiedBitboard不要。ナイトの利きは先後の区別はない。
+inline Bitboard chessKnightEffect(const Square sq)
+{
+	ASSERT_LV3(sq <= SQ_NB);
+	return BB_Table::ChessKnightEffectBB[sq];
 }
 
 // 銀の利き

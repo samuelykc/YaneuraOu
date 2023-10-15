@@ -463,23 +463,23 @@ enum PieceType : uint32_t
 {
 	// 金の順番を飛の後ろにしておく。KINGを8にしておく。
 	// こうすることで、成りを求めるときに pc |= 8;で求まり、かつ、先手の全種類の駒を列挙するときに空きが発生しない。(DRAGONが終端になる)
-	NO_PIECE_TYPE, PAWN/*歩*/, LANCE/*香*/, KNIGHT/*桂*/, SILVER/*銀*/, BISHOP/*角*/, ROOK/*飛*/, GOLD/*金*/,
-	KING = 8/*玉*/, PRO_PAWN /*と*/, PRO_LANCE /*成香*/, PRO_KNIGHT /*成桂*/, PRO_SILVER /*成銀*/, HORSE/*馬*/, DRAGON/*龍*/, QUEEN/*未使用*/,
+	NO_PIECE_TYPE, PAWN/*歩*/, LANCE/*香*/, KNIGHT/*桂*/, SILVER/*銀*/, BISHOP/*角*/, ROOK/*飛*/, C_KNIGHT_P/*ナイト（成れる）*/, C_KNIGHT/*ナイト*/, GOLD/*金*/,
+	KING = 10/*玉*/, PRO_PAWN /*と*/, PRO_LANCE /*成香*/, PRO_KNIGHT /*成桂*/, PRO_SILVER /*成銀*/, HORSE/*馬*/, DRAGON/*龍*/, PRO_C_KNIGHT_P/*成ナイト*/, QUEEN/*未使用*/,
 
 	PIECE_HAND_ZERO = PAWN, // 手駒の開始位置
 	PIECE_HAND_NB = KING,   // 手駒になる駒種の最大+1
 
-	PIECE_TYPE_PROMOTE = 8, // 成り駒と非成り駒との差(この定数を足すと成り駒になる)
-	PIECE_TYPE_NB = 16, // 駒種の数。(成りを含める)
+	PIECE_TYPE_PROMOTE = 10, // 成り駒と非成り駒との差(この定数を足すと成り駒になる)
+	PIECE_TYPE_NB = 19, // 駒種の数。(成りを含める)
 
 	// --- 特殊用途
 
 	// 指し手生成(GeneratePieceMove = GPM)でtemplateの引数として使うマーカー的な値。変更する可能性があるのでユーザーは使わないでください。
 	// 連続的な値にしておくことで、テーブルジャンプしやすくする。
-	GPM_BR = 16,     // Bishop Rook
-	GPM_GBR = 17,     // Gold Bishop Rook
-	GPM_GHD = 18,     // Gold Horse Dragon
-	GPM_GHDK = 19,     // Gold Horse Dragon King
+	GPM_BR = 19,     // Bishop Rook
+	GPM_GBR = 20,     // Gold Bishop Rook
+	GPM_GHD = 21,     // Gold Horse Dragon
+	GPM_GHDK = 22,     // Gold Horse Dragon King
 
 	// --- Position::pieces()で用いる特殊な定数。空いてるところを順番に用いる。
 	// Position::pieces()では、PAWN , LANCE , … , DRAGONはそのまま用いるが、それ以外に↓の定数が使える。
@@ -530,7 +530,7 @@ constexpr PieceType type_of(Piece pc) { return (PieceType)(pc & 15); }
 // 駒に対して成れない駒かどうかを判定する。(玉、金に対してもtrueが返る)
 constexpr bool is_promoted_piece(Piece pc)
 {
-	static_assert(GOLD == 7, "GOLD must be 7.");
+	static_assert(GOLD == 9, "GOLD must be 9.");
 	return (type_of(pc) >= GOLD) ? true : false;
 }
 

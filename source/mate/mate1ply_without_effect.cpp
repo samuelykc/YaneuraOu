@@ -25,6 +25,8 @@ namespace {
 		PIECE_TYPE_CHECK_PAWN_WITH_PRO, // 成りで王手になるところ
 		PIECE_TYPE_CHECK_LANCE,
 		PIECE_TYPE_CHECK_KNIGHT,
+		PIECE_TYPE_CHECK_C_KNIGHT,
+		PIECE_TYPE_CHECK_C_KNIGHT_P,
 		PIECE_TYPE_CHECK_SILVER,
 		PIECE_TYPE_CHECK_GOLD,
 		PIECE_TYPE_CHECK_BISHOP,
@@ -147,6 +149,35 @@ namespace {
 						}
 						break;
 
+					case PIECE_TYPE_CHECK_C_KNIGHT:
+
+						// 敵玉から桂の桂にある駒
+						tmp = chessKnightEffect(sq);
+						while (tmp)
+						{
+							to = tmp.pop();
+							bb |= chessKnightEffect(to);
+						}
+						break;
+
+					case PIECE_TYPE_CHECK_C_KNIGHT_P:
+
+						// 敵玉から桂の桂にある駒
+						tmp = chessKnightEffect(sq);
+						while (tmp)
+						{
+							to = tmp.pop();
+							bb |= chessKnightEffect(to);
+						}
+						// 成って王手(金)になる移動元
+						tmp = goldEffect(~c, sq) & enemyBB;
+						while (tmp)
+						{
+							to = tmp.pop();
+							bb |= chessKnightEffect(to);
+						}
+						break;
+
 					case PIECE_TYPE_CHECK_SILVER:
 
 						// 敵玉から銀の銀にある駒。
@@ -209,6 +240,8 @@ namespace {
 					case PIECE_TYPE_CHECK_NON_SLIDER:
 						bb =  CHECK_CAND_BB[sq][PIECE_TYPE_CHECK_GOLD][c]
 							| CHECK_CAND_BB[sq][PIECE_TYPE_CHECK_KNIGHT][c]
+							| CHECK_CAND_BB[sq][PIECE_TYPE_CHECK_C_KNIGHT][c]
+							| CHECK_CAND_BB[sq][PIECE_TYPE_CHECK_C_KNIGHT_P][c]
 							| CHECK_CAND_BB[sq][PIECE_TYPE_CHECK_SILVER][c]
 							| CHECK_CAND_BB[sq][PIECE_TYPE_CHECK_PAWN_WITH_NO_PRO][c]
 							| CHECK_CAND_BB[sq][PIECE_TYPE_CHECK_PAWN_WITH_PRO][c];
@@ -253,6 +286,18 @@ namespace {
 						{
 							to = tmp.pop();
 							bb |= knightEffect(~c, to);
+						}
+						break;
+
+					case C_KNIGHT:
+					case C_KNIGHT_P:
+					case PRO_C_KNIGHT_P:	//to do
+						// ナイトは玉8近傍の逆桂か。
+						tmp = kingEffect(sq);
+						while (tmp)
+						{
+							to = tmp.pop();
+							bb |= chessKnightEffect(to);
 						}
 						break;
 
@@ -429,6 +474,24 @@ namespace {
 			from = bb.pop();
 			sum |= knightEffect<Them>(from);
 		}
+		bb = pos.pieces<Them,C_KNIGHT>() & check_around_bb<Them>(C_KNIGHT, sq_king);
+		while (bb)
+		{
+			from = bb.pop();
+			sum |= chessKnightEffect<Them>(from);
+		}
+		bb = pos.pieces<Them,C_KNIGHT_P>() & check_around_bb<Them>(C_KNIGHT_P, sq_king);
+		while (bb)
+		{
+			from = bb.pop();
+			sum |= chessKnightEffect<Them>(from);
+		}
+		bb = pos.pieces<Them,PRO_C_KNIGHT_P>() & check_around_bb<Them>(PRO_C_KNIGHT_P, sq_king);	//to do
+		while (bb)
+		{
+			from = bb.pop();
+			sum |= chessKnightEffect<Them>(from);
+		}
 		bb = pos.pieces<Them,SILVER>() & check_around_bb<Them>(SILVER, sq_king);
 		while (bb)
 		{
@@ -500,6 +563,24 @@ namespace {
 		{
 			from = bb.pop();
 			sum |= knightEffect<Them>(from);
+		}
+		bb = pos.pieces<Them,C_KNIGHT>() & check_around_bb<Them>(C_KNIGHT, sq_king) & avoid_bb;
+		while (bb)
+		{
+			from = bb.pop();
+			sum |= chessKnightEffect<Them>(from);
+		}
+		bb = pos.pieces<Them,C_KNIGHT_P>() & check_around_bb<Them>(C_KNIGHT_P, sq_king) & avoid_bb;
+		while (bb)
+		{
+			from = bb.pop();
+			sum |= chessKnightEffect<Them>(from);
+		}
+		bb = pos.pieces<Them,PRO_C_KNIGHT_P>() & check_around_bb<Them>(PRO_C_KNIGHT_P, sq_king) & avoid_bb;	//to do
+		while (bb)
+		{
+			from = bb.pop();
+			sum |= chessKnightEffect<Them>(from);
 		}
 		bb = pos.pieces<Them,SILVER>() & check_around_bb<Them>(SILVER, sq_king) & avoid_bb;
 		while (bb)
@@ -874,6 +955,38 @@ namespace Mate {
 				if (can_king_escape  <Them>(pos, to, Bitboard(ZERO), pos.pieces())) { continue; }
 				if (can_piece_capture<Them>(pos, to, pinned        , pos.pieces())) { continue; }
 				return make_move_drop(KNIGHT, to , Us);
+			}
+		}
+
+		// ナイト打ち
+		if (hand_count(ourHand, C_KNIGHT))
+		{
+			bb = chessKnightEffect(sq_king) & bb_drop;
+
+			while (bb)
+			{
+				to = bb.pop();
+				//      bb_attacks =knightEffect(Us, to);
+				// ナイトはto以外は王が1手で移動できない場所なので求めるまでもない。
+
+				if (can_king_escape  <Them>(pos, to, Bitboard(ZERO), pos.pieces())) { continue; }
+				if (can_piece_capture<Them>(pos, to, pinned        , pos.pieces())) { continue; }
+				return make_move_drop(C_KNIGHT, to , Us);
+			}
+		}
+		if (hand_count(ourHand, C_KNIGHT_P))
+		{
+			bb = chessKnightEffect(sq_king) & bb_drop;
+
+			while (bb)
+			{
+				to = bb.pop();
+				//      bb_attacks =knightEffect(Us, to);
+				// ナイトはto以外は王が1手で移動できない場所なので求めるまでもない。
+
+				if (can_king_escape  <Them>(pos, to, Bitboard(ZERO), pos.pieces())) { continue; }
+				if (can_piece_capture<Them>(pos, to, pinned        , pos.pieces())) { continue; }
+				return make_move_drop(C_KNIGHT_P, to , Us);
 			}
 		}
 
@@ -1428,7 +1541,7 @@ namespace Mate {
 		// まあ、一応、やるだけやるか…。
 
 		bb = check_cand_bb<Us>(PIECE_TYPE_CHECK_NON_SLIDER, sq_king)
-			& (pos.pieces(Us, GOLDS, SILVER, KNIGHT, PAWN));
+			& (pos.pieces(Us, GOLDS, SILVER, KNIGHT, C_KNIGHT, C_KNIGHT_P, PAWN));
 		if (!bb)
 			goto DC_CHECK;
 
@@ -1553,6 +1666,81 @@ namespace Mate {
 					;
 				else if (can_piece_capture<Them>(pos, to, new_pin, slide)) { continue; }
 				return make_move_promote(from, to , Us , KNIGHT);
+			}
+		}
+
+		// ナイト
+		bb = check_cand_bb(Us, PIECE_TYPE_CHECK_KNIGHT, sq_king)  & pos.pieces<Us, C_KNIGHT>();
+		while (bb)
+		{
+			from = bb.pop();
+			bb_check = chessKnightEffect(from) & bb_move;
+			if (!bb_check) { continue; }
+
+			Bitboard slide   = pos.pieces()          ^ from;
+			Bitboard new_pin = pos.pinned_pieces<Them>(from);
+
+			while (bb_check)
+			{
+				to = bb_check.pop();
+				bb_attacks = chessKnightEffect(to);
+				// 桂馬の特性上、成りと不成の二通りの王手の両方が同時に可能になることはないので以下ではcontinueで良い。
+				//if (!(pos.attackers_to(Us, to, slide) ^ from)) { continue; }
+				// →　この駒は取られないならそれで良い。ここへの味方の利きは不要。
+
+				if (pos.discovered(from, to, our_king, our_pinned)) { continue; }
+				if (can_king_escape<Them>(pos, from, to, bb_attacks, slide)) { continue; }
+				// 桂馬はpinされているなら移動で必ず両王手になっているはずである。
+				if (dcCandidates & from)
+					;
+				else if (can_piece_capture<Them>(pos, to, new_pin, slide)) { continue; }
+				return make_move(from, to , Us , C_KNIGHT);
+			}
+		}
+
+		// ナイト（成れる）も成りと不成が選択できるので少し嫌らしい
+		bb = check_cand_bb(Us, PIECE_TYPE_CHECK_KNIGHT, sq_king)  & pos.pieces<Us, C_KNIGHT_P>();
+		while (bb)
+		{
+			from = bb.pop();
+			bb_check = chessKnightEffect(from) & bb_move;
+			if (!bb_check) { continue; }
+
+			Bitboard slide   = pos.pieces()          ^ from;
+			Bitboard new_pin = pos.pinned_pieces<Them>(from);
+
+			while (bb_check)
+			{
+				to = bb_check.pop();
+				bb_attacks = chessKnightEffect(to);
+				// 敵陣1,2段目からのStepAttackはBitboard(ZERO)相当なのでここへの不成りが生成されることはない
+				if (!(bb_attacks & sq_king)) { goto PRO_C_KNIGHT_P; }
+				// 桂馬の特性上、成りと不成の二通りの王手の両方が同時に可能になることはないので以下ではcontinueで良い。
+				//if (!(pos.attackers_to(Us, to, slide) ^ from)) { continue; }
+				// →　この駒は取られないならそれで良い。ここへの味方の利きは不要。
+
+				if (pos.discovered(from, to, our_king, our_pinned)) { continue; }
+				if (can_king_escape<Them>(pos, from, to, bb_attacks, slide)) { continue; }
+				// 桂馬はpinされているなら移動で必ず両王手になっているはずである。
+				if (dcCandidates & from)
+					;
+				else if (can_piece_capture<Them>(pos, to, new_pin, slide)) { continue; }
+				return make_move(from, to , Us , C_KNIGHT_P);
+
+			PRO_C_KNIGHT_P:;
+				// ナイト成りでの王手
+
+				if (!(canPromote(Us, from, to))) { continue; }
+				bb_attacks = goldEffect<Us>(to);
+				if (!(bb_attacks & sq_king)) { continue; }
+				if (!(pos.attackers_to<Us>(to, slide) ^ from)) { continue; }
+				if (pos.discovered(from, to, our_king, our_pinned)) { continue; }
+				if (can_king_escape<Them>(pos, from, to, bb_attacks, slide)) { continue; }
+				// 桂馬はpinされているなら移動で必ず両王手になっているはずである。
+				if (dcCandidates & from)
+					;
+				else if (can_piece_capture<Them>(pos, to, new_pin, slide)) { continue; }
+				return make_move_promote(from, to , Us , C_KNIGHT_P);
 			}
 		}
 

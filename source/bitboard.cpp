@@ -71,12 +71,13 @@ namespace BB_Table
 		RANK7_BB | RANK8_BB | RANK9_BB
 	};
 
-	// 玉、金、銀、桂、歩の利き
+	// 玉、金、銀、桂、歩、ナイトの利き
 	Bitboard KingEffectBB[SQ_NB_PLUS1];
 	Bitboard GoldEffectBB[SQ_NB_PLUS1][COLOR_NB];
 	Bitboard SilverEffectBB[SQ_NB_PLUS1][COLOR_NB];
 	Bitboard KnightEffectBB[SQ_NB_PLUS1][COLOR_NB];
 	Bitboard PawnEffectBB[SQ_NB_PLUS1][COLOR_NB];
+	Bitboard ChessKnightEffectBB[SQ_NB_PLUS1];
 
 	// 盤上の駒をないものとして扱う、遠方駒の利き。香、角、飛
 	Bitboard LanceStepEffectBB[SQ_NB_PLUS1][COLOR_NB];
@@ -311,6 +312,37 @@ void Bitboards::init()
 		// 飛
 		// 飛車のstep effectは、盤上に駒がない時の飛車の利き。
 		RookStepEffectBB[sq]   = rookEffect(sq, Bitboard(0));
+
+		// ナイト
+		Bitboard tmp(ZERO);
+		Bitboard pawnBlack = lanceEffect(BLACK, sq, Bitboard(1));
+		Bitboard pawnWhite = lanceEffect(WHITE, sq, Bitboard(1));
+		Square sqLL = sq + SQ_L + SQ_L;
+		Square sqRR = sq + SQ_R; +SQ_R;
+
+		if(pawnBlack)
+		{
+			Square sq2 = pawnBlack.pop();
+			Bitboard pawn2 = lanceEffect(BLACK, sq2, Bitboard(1)); // さらに1つ前
+			if(pawn2) tmp = bishopEffect(sq2, Bitboard(1)) & RANK_BB[rank_of(pawn2.pop())];
+		}
+		if(pawnWhite)
+		{
+			Square sq2 = pawnWhite.pop();
+			Bitboard pawn2 = lanceEffect(WHITE, sq2, Bitboard(1)); // さらに1つ前
+			if(pawn2) tmp |= (bishopEffect(sq2, Bitboard(1)) & RANK_BB[rank_of(pawn2.pop())]);
+		}
+		if(sqLL <= SQ_NB)
+		{
+			Square sqLLU = sqLL + SQ_U; if(sqLLU >= SQ_ZERO) tmp |= Bitboard(sqLLU);
+			Square sqLLD = sqLL + SQ_D; if(sqLLD <= SQ_NB) tmp |= Bitboard(sqLLD);
+		}
+		if(sqRR >= SQ_ZERO)
+		{
+			Square sqRRU = sqRR + SQ_U; if(sqRRU >= SQ_ZERO) tmp |= Bitboard(sqRRU);
+			Square sqRRD = sqRR + SQ_D; if(sqRRD <= SQ_NB) tmp |= Bitboard(sqRRD);
+		}
+		ChessKnightEffectBB[sq] = tmp;
 	}
 
 	// 先後の区別のあるstep effect (桂、銀、金)
@@ -452,6 +484,11 @@ void Bitboards::init()
 			target = Bitboard(ZERO);
 			FOREACH(knightEffect(them, ksq) | enemyGold, knightEffect);
 			CheckCandidateBB[ksq][KNIGHT - 1][Us] = target & ~Bitboard(ksq);
+
+			// ナイトで王手になる可能性
+			target = Bitboard(ZERO);
+			FOREACH_KING(chessKnightEffect(ksq));	//to do: consider PRO_C_KNIGHT_P
+			CheckCandidateBB[ksq][C_KNIGHT_P - 1][Us] = target & ~Bitboard(ksq);
 
 			// 銀も同様だが、2,3段目からの引き成りで王手になるパターンがある。(4段玉と5段玉に対して)
 			target = Bitboard(ZERO);
