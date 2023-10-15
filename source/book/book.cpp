@@ -957,7 +957,7 @@ namespace Book
 			, "user_book1.db", "user_book2.db", "user_book3.db", "book.bin" };
 
 #if !defined(__EMSCRIPTEN__)
-		o["BookFile"] << Option(book_list, book_list[0]);	//to do: fix book loading and set to 1
+		o["BookFile"] << Option(book_list, book_list[1]);
 #else
 		// WASM では no_book をデフォルトにする
 		o["BookFile"] << Option(book_list, book_list[0]);
