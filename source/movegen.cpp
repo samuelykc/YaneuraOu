@@ -82,21 +82,8 @@ template <PieceType Pt, Color Us, bool All> struct make_move_target {
 		}
 		break;
 
-		// 成れるなら成りも生成するが、1,2段目には不成で移動できない。
-		case KNIGHT:
-		{
-			while (target)
-			{
-				to = target.pop();
-				if (canPromote(Us, to))
-					mlist++->move = make_move_promote(from, to  , Us, Pt);
-
-				mlist++->move = make_move(from, to , Us, Pt);
-			}
-		}
-		break;
-
 		// 成れるなら成りも生成する駒 
+		case KNIGHT:
 		case SILVER:
 		{
 			if (enemy_field(Us) & from) {
