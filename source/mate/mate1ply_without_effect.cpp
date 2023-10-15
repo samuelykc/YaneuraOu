@@ -138,13 +138,6 @@ namespace {
 							to = tmp.pop();
 							bb |= knightEffect(~c, to);
 						}
-						// 成って王手(金)になる移動元
-						tmp = goldEffect(~c, sq) & enemyBB;
-						while (tmp)
-						{
-							to = tmp.pop();
-							bb |= knightEffect(~c, to);
-						}
 						break;
 
 					case PIECE_TYPE_CHECK_SILVER:
@@ -1525,8 +1518,6 @@ namespace Mate {
 			{
 				to = bb_check.pop();
 				bb_attacks = knightEffect<Us>(to);
-				// 敵陣1,2段目からのStepAttackはBitboard(ZERO)相当なのでここへの不成りが生成されることはない
-				if (!(bb_attacks & sq_king)) { goto PRO_KNIGHT; }
 				// 桂馬の特性上、成りと不成の二通りの王手の両方が同時に可能になることはないので以下ではcontinueで良い。
 				//if (!(pos.attackers_to(Us, to, slide) ^ from)) { continue; }
 				// →　この駒は取られないならそれで良い。ここへの味方の利きは不要。
@@ -1538,21 +1529,6 @@ namespace Mate {
 					;
 				else if (can_piece_capture<Them>(pos, to, new_pin, slide)) { continue; }
 				return make_move(from, to , Us , KNIGHT);
-
-			PRO_KNIGHT:;
-				// 桂成りでの王手
-
-				if (!(canPromote(Us, from, to))) { continue; }
-				bb_attacks = goldEffect<Us>(to);
-				if (!(bb_attacks & sq_king)) { continue; }
-				if (!(pos.attackers_to<Us>(to, slide) ^ from)) { continue; }
-				if (pos.discovered(from, to, our_king, our_pinned)) { continue; }
-				if (can_king_escape<Them>(pos, from, to, bb_attacks, slide)) { continue; }
-				// 桂馬はpinされているなら移動で必ず両王手になっているはずである。
-				if (dcCandidates & from)
-					;
-				else if (can_piece_capture<Them>(pos, to, new_pin, slide)) { continue; }
-				return make_move_promote(from, to , Us , KNIGHT);
 			}
 		}
 
