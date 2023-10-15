@@ -487,7 +487,7 @@ void Bitboards::init()
 
 			// ナイトで王手になる可能性
 			target = Bitboard(ZERO);
-			FOREACH_KING(chessKnightEffect(ksq));	//to do: consider PRO_C_KNIGHT_P
+			FOREACH_KING(chessKnightEffect(ksq), chessKnightEffect);	//to do: consider PRO_C_KNIGHT_P
 			CheckCandidateBB[ksq][C_KNIGHT_P - 1][Us] = target & ~Bitboard(ksq);
 
 			// 銀も同様だが、2,3段目からの引き成りで王手になるパターンがある。(4段玉と5段玉に対して)
