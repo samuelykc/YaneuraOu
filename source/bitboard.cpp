@@ -468,7 +468,8 @@ void Bitboards::init()
 
 			// 桂で王手になる可能性のあるものは、ksqに敵の桂をおいたところに移動できる桂(不成) + ksqに金をおいた範囲(enemyGold)に成りで移動できる桂
 			target = Bitboard(ZERO);
-			FOREACH(knightEffect(them, ksq) | enemyGold, knightEffect);
+			FOREACH(knightEffect(them, ksq), knightEffect);
+			// FOREACH(knightEffect(them, ksq) | enemyGold, knightEffect);
 			CheckCandidateBB[ksq][KNIGHT - 1][Us] = target & ~Bitboard(ksq);
 
 			// 銀も同様だが、2,3段目からの引き成りで王手になるパターンがある。(4段玉と5段玉に対して)
@@ -1000,12 +1001,12 @@ void Bitboard::UnitTest(Test::UnitTester& tester)
 
 		// 何も駒のない盤面上に駒ptを55に置いた時の利きの数。
 		int p0_table[] = {
-			0,1,4,2,5,16,16,6,	// Empty、歩、香、桂、銀、角、飛、金
+			0,1,4,8,5,16,16,6,	// Empty、歩、香、桂、銀、角、飛、金
 			8,6,6,6,6,20,20,6,	// 玉、と、…
 		};
 		// 駒が敷き詰められた盤面上で駒ptを55に置いた時の利きの数。
 		int p1_table[] = {
-			0,1,1,2,5, 4, 4,6,	// Empty、歩、香、桂、銀、角、飛
+			0,1,1,8,5, 4, 4,6,	// Empty、歩、香、桂、銀、角、飛
 			8,6,6,6,6, 8, 8,6,	// 玉、と、…
 		};
 
